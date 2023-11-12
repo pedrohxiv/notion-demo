@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { Toaster } from "sonner";
 
 import { ConvexClientProvider } from "@/components/providers/convex-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
@@ -27,6 +28,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
             storageKey="notion-theme"
           >
             {children}
+            <Toaster position="top-center" />
           </ThemeProvider>
         </ConvexClientProvider>
       </body>
