@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import { Toaster } from "sonner";
 
 import { ConvexClientProvider } from "@/components/providers/convex-provider";
+import { ModalProvider } from "@/components/providers/modal-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 
 import "./globals.css";
@@ -27,8 +28,9 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
             disableTransitionOnChange
             storageKey="notion-theme"
           >
+            <Toaster position="bottom-center" />
+            <ModalProvider />
             {children}
-            <Toaster position="top-center" />
           </ThemeProvider>
         </ConvexClientProvider>
       </body>

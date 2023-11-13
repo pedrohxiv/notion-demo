@@ -4,20 +4,31 @@ import { useMutation } from "convex/react";
 import {
   ChevronsLeft,
   MenuIcon,
+  Plus,
   PlusCircle,
   Search,
   Settings,
+  Trash,
 } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import { ElementRef, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useMediaQuery } from "usehooks-ts";
 
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { api } from "@/convex/_generated/api";
+import { useSearch } from "@/hooks/use-search";
+import { useSettings } from "@/hooks/use-settings";
 import { cn } from "@/lib/utils";
 
 import { DocumentList } from "./document-list";
 import { Item } from "./item";
+import { Navbar } from "./navbar";
+import { TrashBox } from "./trash-box";
 import { UserItem } from "./user-item";
 
 export const Navigation = () => {
@@ -25,14 +36,18 @@ export const Navigation = () => {
 
   const create = useMutation(api.documents.create);
 
+  const search = useSearch();
+  const settings = useSettings();
+
+  const params = useParams();
   const pathname = usePathname();
 
   const isResizingRef = useRef(false);
   const sidebarRef = useRef<ElementRef<"aside">>(null);
   const navbarRef = useRef<ElementRef<"div">>(null);
 
-  const [isResetting, setIsResetting] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(isMobile);
+  const [isResetting, setIsResetting] = useState<boolean>(false);
+  const [isCollapsed, setIsCollapsed] = useState<boolean>(isMobile);
 
   useEffect(() => {
     if (isMobile) {
@@ -146,12 +161,24 @@ export const Navigation = () => {
         </div>
         <div>
           <UserItem />
-          <Item icon={Search} isSearch label="Search" onClick={() => {}} />
-          <Item icon={Settings} label="Settings" onClick={() => {}} />
+          <Item icon={Search} isSearch label="Search" onClick={search.onOpen} />
+          <Item icon={Settings} label="Settings" onClick={settings.onOpen} />
           <Item icon={PlusCircle} label="New Page" onClick={handleCreate} />
         </div>
         <div className="mt-4">
           <DocumentList />
+          <Item icon={Plus} label="Add a page" onClick={handleCreate} />
+          <Popover>
+            <PopoverTrigger className="w-full mt-4">
+              <Item label="Trash" icon={Trash} />
+            </PopoverTrigger>
+            <PopoverContent
+              className="p-0 w-72"
+              side={isMobile ? "bottom" : "right"}
+            >
+              <TrashBox />
+            </PopoverContent>
+          </Popover>
         </div>
         <div
           className="opacity-0 group-hover/sidebar:opacity-100 transition cursor-ew-resize absolute h-full w-1 bg-primary/10 right-0 top-0"
@@ -167,15 +194,19 @@ export const Navigation = () => {
         )}
         ref={navbarRef}
       >
-        <nav className="bg-transparent px-3 py-2 w-full">
-          {isCollapsed && (
-            <MenuIcon
-              className="h-6 w-6 text-muted-foreground hover:text-neutral-600 dark:hover:text-neutral-300 transition"
-              onClick={resetWidth}
-              role="button"
-            />
-          )}
-        </nav>
+        {!!params.documentId ? (
+          <Navbar isCollapsed={isCollapsed} onResetWidth={resetWidth} />
+        ) : (
+          <nav className="bg-transparent px-3 py-2 w-full">
+            {isCollapsed && (
+              <MenuIcon
+                className="h-6 w-6 text-muted-foreground hover:text-neutral-600 dark:hover:text-neutral-300 transition"
+                onClick={resetWidth}
+                role="button"
+              />
+            )}
+          </nav>
+        )}
       </div>
     </>
   );
