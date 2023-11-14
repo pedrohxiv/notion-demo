@@ -71,9 +71,8 @@ export const Item = ({
 
     const promise = create({ title: "Untitled", parentDocument: id }).then(
       (documentId) => {
-        if (!expanded) {
-          onExpand?.();
-        }
+        if (!expanded) onExpand?.();
+
         router.push(`/documents/${documentId}`);
       }
     );
@@ -90,7 +89,7 @@ export const Item = ({
 
     if (!id) return;
 
-    const promise = archive({ id });
+    const promise = archive({ id }).then(() => router.push("/documents"));
 
     toast.promise(promise, {
       loading: "Moving to trash...",
@@ -123,7 +122,7 @@ export const Item = ({
       {documentIcon ? (
         <div className="shrink-0 mr-2 text-[18px]">{documentIcon}</div>
       ) : (
-        <Icon className="shrink-0 h-[18px] mr-2 text-muted-foreground" />
+        <Icon className="shrink-0 h-[18px] w-[18px] mr-2 text-muted-foreground" />
       )}
       <span className="truncate">{label}</span>
       {isSearch && (
@@ -171,7 +170,7 @@ export const Item = ({
   );
 };
 
-Item.Skeleton = ({ level }: { level?: number }) => {
+Item.Skeleton = function ItemSkeleton({ level }: { level?: number }) {
   return (
     <div
       className="flex gap-x-2 py-[3px]"

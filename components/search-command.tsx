@@ -30,6 +30,11 @@ export const SearchCommand = () => {
 
   const [isMounted, setIsMounted] = useState(false);
 
+  const onSelect = (id: string) => {
+    router.push(`/documents/${id}`);
+    onClose();
+  };
+
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -46,11 +51,6 @@ export const SearchCommand = () => {
 
     return () => document.removeEventListener("keydown", down);
   }, [toggle]);
-
-  const onSelect = (id: string) => {
-    router.push(`/documents/${id}`);
-    onClose();
-  };
 
   if (!isMounted) {
     return null;
